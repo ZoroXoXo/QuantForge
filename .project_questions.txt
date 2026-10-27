@@ -10,3 +10,36 @@ Q)why do you think we should validate(wether empty or not) the input before
 performing normalization?
 
 A)to prevent error during normalization
+
+-------------------------------------------------------------------------------
+
+Q)Why we used gaussian filter as a starting point?
+
+A)
+-It reduces random noise. Gaussian filtering smooths small pixel variations,
+which may help us recover the overall signal trend.
+-It's a standard image-processing technique. OpenCV provides cv2.GaussianBlur(), 
+so it's straightforward to implement and test.
+-It gives us a useful baseline. We can measure how well a simple smoothing 
+technique performs before trying more specialized methods.
+-It has a trade-off we can study. Stronger smoothing reduces noise but can 
+also blur sharp changes in the signal.
+
+our noise is added to the numerical signal before it is drawn, so it isn't 
+ordinary pixel noise. Gaussian filtering may smooth the rendered line, but
+rasterization and line thickness also affect the result.
+
+-------------------------------------------------------------------------------
+
+Q)Why do you think Gaussian filtering gives the center pixel more weight than 
+pixels farther away?
+
+A)Because the center pixel is the pixel we're currently processing, so it's 
+usually the most relevant to its new value. Nearby pixels are also relevant,
+but pixels farther away are less likely to represent the same local detail.
+
+Giving the center more weight helps reduce noise without changing the original 
+pixel value too aggressively.
+-------------------------------------------------------------------------------
+
+

@@ -45,3 +45,18 @@ to put it simply
     -testing input validation
     -testing invalid inputs
     -testing invalid image dimensions
+
+#Applying image filtering
+
+we will use gaussian filtering
+
+Gaussian filtering smooths an image by averaging neighboring pixels,
+ giving more weight to pixels that are closer to the pixel being processed.
+This helps reduce small variations, but it can also blur important details.
+
+how it is implemented in this project:
+
+    -Convert the noisy numerical signal into a grayscale image.
+    -Apply Gaussian filtering to that image.
+    -Recover or estimate the signal from the filtered image.
+    -Compare the result against the known clean synthetic signal.
