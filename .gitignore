@@ -1,0 +1,25 @@
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated outputs
+outputs/plots/*
+outputs/images/*
+outputs/metrics/*
+!outputs/plots/.gitkeep
+!outputs/images/.gitkeep
+!outputs/metrics/.gitkeep
+
+# Local data
+data/market/*
+!data/market/.gitkeep
+
+# Secrets
+.env

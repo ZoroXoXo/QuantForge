@@ -1,0 +1,1 @@
+#Convert a signal into a grayscale image

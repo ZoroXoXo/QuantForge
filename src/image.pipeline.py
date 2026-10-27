@@ -1,0 +1,1 @@
+#Apply smoothing, histogram processing and edge detection

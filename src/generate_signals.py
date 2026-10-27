@@ -1,0 +1,1 @@
+#Generate clean signals, noise and regime changes

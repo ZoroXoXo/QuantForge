@@ -1,0 +1,1 @@
+#Check that signal generation works correctly
