@@ -23,3 +23,5 @@ data/market/*
 
 # Secrets
 .env
+.project_progress.txt
+.project_questions.txt
