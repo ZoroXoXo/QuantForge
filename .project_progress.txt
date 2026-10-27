@@ -30,3 +30,18 @@ to put it simply
     Normalizes the signal values.
     Converts time and signal values into pixel coordinates.
     Connects those points using OpenCV.
+
+
+# Validated the following:
+    -signal is not empty
+    -signal is 1d
+    -image has valid dimensions
+    -image only has finite values
+
+#created test file for signal_to_image
+    -tested image size
+    -tested image data type
+    -testing  image has black background pixels
+    -testing input validation
+    -testing invalid inputs
+    -testing invalid image dimensions

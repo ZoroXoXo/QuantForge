@@ -4,8 +4,28 @@ import numpy as np
 import cv2
 
 def signal_to_image(signal,width=1000,height=500):
+
+    #signal cannot be empty
+    if len(signal)==0:
+        raise ValueError("Signal cannot be empty")
+
+    #conversion to a numpy array
+    signal = np.asarray(signal, dtype=float)
+
+    #signal must be 1d
+    if signal.ndim != 1:  
+        raise ValueError("Signal must be one-dimensional.")
+
+    #validating image dimensions
+    if width <= 0 or height <= 0:
+        raise ValueError("Width and height must be positive.")
+
     black_image=np.zeros((height,width),dtype=np.uint8)
 
+    #to check wether signal only has finite numbers
+    if not np.all(np.isfinite(signal)):
+        raise ValueError("Signal must contain only finite values.")
+    
     #normalization
     if np.max(signal)==np.min(signal):
         signal_norm=np.full(len(signal),0.5)
