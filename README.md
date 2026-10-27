@@ -156,6 +156,6 @@ This project is not financial advice and does not constitute a validated trading
 
 ---
 
-**Author:** YOUR_NAME
+**Author:** Paarth Kashiv
 
 **Focus Areas:** Digital Image Processing · Signal Analysis · Quantitative Research · Python

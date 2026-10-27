@@ -1,0 +1,9 @@
+Q)why we need to convert the signal values into pixel coordinates, rather 
+than simply saving the array as an image?
+
+A)to preserve the signal's structure in a form that image-processing algorithms
+ can work with.
+
+ ------------------------------------------------------------------------------
+
+ 

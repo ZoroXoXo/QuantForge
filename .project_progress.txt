@@ -1,0 +1,32 @@
+step-1
+
+i made a custom uptrend ,downtrend and normal trend which will be later
+replaced by original data
+
+in short we made a clean signal, added nosiy signal and regime labels 
+and plotted
+
+step-2
+
+implemented signal-to-image conversion in following order:
+    
+    -convert signal into an image
+    -display image and check wether its shape matches the original signal
+    -then proceed with filtering and edge detection
+
+# CONVERTING SIGNAL TO IMAGE
+
+first i made a black  screen
+
+next mapped signals to pixel coordinates
+since there can be values in the signal which exceed are limit of h and w
+we use normalization
+
+
+next we draw the signal using polyline and column_stack
+
+to put it simply
+    Creates a black grayscale image.
+    Normalizes the signal values.
+    Converts time and signal values into pixel coordinates.
+    Connects those points using OpenCV.
