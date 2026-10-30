@@ -11,7 +11,7 @@ with known trend and volatility regimes.
 import numpy as np
 
 
-def generate_signal(n=1000, seed=42):
+def generate_signal(n=1000, seed=42, sideways_noise_std=5.0):  # adding sideways noise parameter 
     """
     Returns:
         time: Time indices.
@@ -51,7 +51,8 @@ def generate_signal(n=1000, seed=42):
     # Add more noise in the final regime.
     noise = np.zeros(n)
     noise[:second] = rng.normal(0, 1.5, second)
-    noise[second:] = rng.normal(0, 5.0, n - second)
+    #noise[second:] = rng.normal(0, 5.0, n - second)  ;;;changing it after adding the new paramter
+    noise[second:] = rng.normal(0, sideways_noise_std, n - second)   
 
     noisy_signal = clean_signal + noise
 

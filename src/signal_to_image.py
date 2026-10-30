@@ -37,7 +37,7 @@ def signal_to_image(signal,width=1000,height=500):
     
     #drawing the signal
     points=np.column_stack((x,y))
-    cv2.polylines(black_image, [points], isClosed=False, color=255, thickness=1)
+    cv2.polylines(black_image, [points], isClosed=False, color=255, thickness=3)  #thickeness changing from 1 to 3 to test median filtering more accurately
 
 
     return black_image
