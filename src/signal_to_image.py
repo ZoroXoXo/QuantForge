@@ -42,16 +42,16 @@ def signal_to_image(signal,width=1000,height=500):
 
     return black_image
 
+if __name__=="__main__":
+    #Displaying generated image
+    from src.generate_signals import generate_signal
+    import matplotlib.pyplot as plt
 
-#Displaying generated image
-from src.generate_signals import generate_signal
-import matplotlib.pyplot as plt
+    _, clean, noisy, _ = generate_signal()
 
-_, clean, noisy, _ = generate_signal()
+    image = signal_to_image(noisy)
 
-image = signal_to_image(noisy)
-
-plt.imshow(image, cmap="gray")
-plt.title("QuantForge: Signal as a Grayscale Image")
-plt.axis("off")
-plt.show()
+    plt.imshow(image, cmap="gray")
+    plt.title("QuantForge: Signal as a Grayscale Image")
+    plt.axis("off")
+    plt.show()
