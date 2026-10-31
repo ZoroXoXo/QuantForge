@@ -49,11 +49,6 @@ function App() {
   isActive: () => boolean = () => true,
 ) {
   try {
-    if (isActive()) {
-      setSignalLoading(true)
-      setSignalError('')
-    }
-
     const result = await previewSignal({
       n: 1000,
       seed: 42,
@@ -64,6 +59,7 @@ function App() {
 
     if (isActive()) {
       setSignalData(result)
+      setSignalError('')
     }
   } catch {
     if (isActive()) {
@@ -106,10 +102,17 @@ function App() {
       }
     })
 
-  void loadDashboardSignal(() => !cancelled)
+  const timer = window.setTimeout(() => {
+    if (cancelled) return
+
+    setSignalLoading(true)
+    setSignalError('')
+    void loadDashboardSignal(() => !cancelled)
+  }, 0)
 
   return () => {
     cancelled = true
+    window.clearTimeout(timer)
   }
 }, [currentPage])
   // Dashboard metrics from the database

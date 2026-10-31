@@ -48,8 +48,29 @@ function Experiments() {
   }
 
   useEffect(() => {
-    void loadExperiments()
-  }, [])
+  let cancelled = false
+
+  getExperiments()
+    .then((data) => {
+      if (!cancelled) {
+        setExperiments(data)
+      }
+    })
+    .catch(() => {
+      if (!cancelled) {
+        setError('Unable to load experiments. Check your backend connection.')
+      }
+    })
+    .finally(() => {
+      if (!cancelled) {
+        setLoading(false)
+      }
+    })
+
+  return () => {
+    cancelled = true
+  }
+}, [])
   const chartData = experiments.map((experiment) => ({
   name: `#${experiment.id}`,
   Noisy: experiment.noisy_mse,

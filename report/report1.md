@@ -9,11 +9,11 @@ The project converts one-dimensional noisy signals into grayscale images, applie
 
 Experiments investigate reconstruction accuracy, filter parameters, signal regimes, transition regions, noise sensitivity, and generalization to unseen signals.
 
-Initial independent testing suggests that Gaussian image filtering performs better at higher noise levels, while numerical moving-average smoothing performs better at lower noise levels. However, statistical testing does not establish a significant difference after multiple-comparison correction.
+Independent testing suggests that Gaussian image filtering performs better at higher noise levels, while numerical moving-average smoothing performs better at lower noise levels. However, statistical testing does not establish a significant difference after multiple-comparison correction.
 
 ### 2. Methodology
 
-**2.1 Synthetic signal generation**
+#### 2.1 Synthetic signal generation
 
 A synthetic signal containing three regimes is generated:
 
@@ -25,16 +25,17 @@ The signal contains Gaussian noise. The first two regimes use a standard deviati
 
 The generator uses NumPy's random number generator with fixed seeds to ensure reproducibility.
 
-**2.2 Signal-to-image conversion**
+#### 2.2 Signal-to-image conversion
 
 The noisy signal is normalized and represented as a grayscale image.
 
 The image uses:
+
 - Width: 1000 pixels
 - Height: 500 pixels
 - Line thickness: 3 pixels
 
-**2.3 Image processing**
+#### 2.3 Image processing
 
 The project investigates:
 
@@ -43,13 +44,13 @@ The project investigates:
 
 Gaussian filtering is performed using OpenCV's `GaussianBlur`.
 
-**2.4 Signal reconstruction**
+#### 2.4 Signal reconstruction
 
 The filtered image is converted back into a one-dimensional signal by identifying the brightest pixel in each image column.
 
 The recovered pixel coordinates are mapped back to the original signal's value range.
 
-**2.5 Numerical baseline**
+#### 2.5 Numerical baseline
 
 A direct numerical moving-average filter is implemented using NumPy.
 
@@ -69,6 +70,8 @@ The best tested configuration was:
 | Trials | 20 |
 
 Increasing the kernel initially reduced reconstruction error. Beyond kernel 151, excessive smoothing increased error.
+
+These results represent the parameter-optimization experiments and should be distinguished from the independent test evaluation.
 
 ### 4. Comparison with Numerical Smoothing
 
@@ -97,7 +100,7 @@ Gaussian filtering performed better in the sideways regime.
 
 ### 6. Transition-Region Evaluation
 
-The reconstruction errors were evaluated in 51-point windows around the two regime transitions.
+Reconstruction errors were evaluated in 51-point windows around the two regime transitions.
 
 | Transition | Gaussian MSE | Numerical MSE |
 |---|---:|---:|
@@ -106,7 +109,7 @@ The reconstruction errors were evaluated in 51-point windows around the two regi
 
 The results indicate that reconstruction performance varies depending on local signal structure.
 
-### 7. Noise Sensitivity Analysis
+### 7. Noise Sensitivity and Parameter Optimization
 
 Sideways noise standard deviation was varied across five levels:
 
@@ -124,9 +127,11 @@ Gaussian and numerical filters were independently optimized using 20 training se
 
 Gaussian filtering achieved lower training MSE at all five noise levels.
 
+These values describe performance on the training experiments used for parameter selection. They should not be interpreted as independent generalization results.
+
 ### 8. Independent Test Evaluation
 
-The selected configurations were evaluated using 50 previously unseen seeds (100–149).
+After selecting the filter configurations using the training data, the selected configurations were evaluated on 50 previously unseen seeds (100–149).
 
 | Noise STD | Gaussian MSE | Numerical MSE | Better Average |
 |---:|---:|---:|---|
@@ -141,11 +146,11 @@ The independent test suggests a change in relative performance:
 - Numerical smoothing performs better at lower noise levels.
 - Gaussian image processing performs better at higher noise levels.
 
-At noise STD 10, Gaussian achieved approximately 8.5% lower MSE than numerical smoothing.
+At noise STD 10, Gaussian filtering achieved approximately 8.5% lower MSE than numerical smoothing.
 
 ### 9. Statistical Evaluation
 
-A paired Wilcoxon signed-rank test was performed on the 50 test signals at each noise level.
+Five paired Wilcoxon signed-rank tests were performed, one for each noise level, using the 50 independent test signals.
 
 | Noise STD | Mean Difference (Gaussian − Numerical) | p-value |
 |---:|---:|---:|
@@ -155,7 +160,9 @@ A paired Wilcoxon signed-rank test was performed on the 50 test signals at each 
 | 7.0 | −0.08401 | 0.37767 |
 | 10.0 | −0.17635 | 0.33257 |
 
-Bonferroni correction was applied conceptually using a significance threshold of 0.01.
+Bonferroni correction was applied across the five comparisons. Using an initial significance level of 0.05, the adjusted significance threshold was:
+
+**α = 0.05 / 5 = 0.01**
 
 No comparison reached this corrected threshold.
 
@@ -169,9 +176,21 @@ Paired win counts also showed a gradual shift:
 | 7.0 | 30 | 20 |
 | 10.0 | 29 | 21 |
 
-These results suggest a change in relative performance, but do not establish statistical superiority.
+These results suggest a change in relative performance, but do not establish statistically significant superiority.
 
-### 10. Conclusion
+### 10. Limitations
+
+The experiments use synthetic signals with controlled regime structures and Gaussian noise.
+
+Consequently:
+
+- The results do not establish performance across all financial signal structures.
+- The noise sensitivity analysis focuses on the configurable sideways-regime noise level.
+- Results should not be assumed to generalize directly to real financial market data.
+- The statistical tests do not establish significant superiority after multiple-comparison correction.
+- Further testing is needed across additional signal structures, noise distributions, and datasets.
+
+### 11. Conclusion
 
 QuantForge demonstrates that one-dimensional signals can be represented as images, processed using classical image-processing techniques, and reconstructed for quantitative evaluation.
 
@@ -185,7 +204,7 @@ The experiments show that:
 
 The project does not establish that image processing is universally superior to numerical filtering. Instead, it demonstrates that image-based processing is a viable alternative whose relative performance depends on the characteristics of the input signal.
 
-### 11. Future Work
+### 12. Future Work
 
 Potential improvements include:
 

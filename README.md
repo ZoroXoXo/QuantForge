@@ -1,161 +1,322 @@
 # QuantForge
 
-### Image-Based Financial Signal Analysis Using Classical Image Processing
+### A Quantitative Research and Signal Analysis Platform
 
-**QuantForge** is an experimental project exploring how classical digital image processing techniques can be applied to noisy financial time-series signals to extract trends, detect structural changes, and evaluate signal reconstruction quality.
+QuantForge is an experimental quantitative research platform exploring the application of classical image processing techniques to financial-style time-series signals.
 
-The project combines concepts from **Image and Video Processing, signal analysis, numerical evaluation, and quantitative finance**.
+What started as an Image and Video Processing research project has evolved into a full-stack application for signal generation, processing, reconstruction, quantitative evaluation, and experiment tracking.
 
-> **Project status:** 🚧 In Development
+The project combines digital signal processing, computer vision, numerical analysis, and quantitative research within an extensible software architecture.
+
+**Project Status:** Active Development
 
 ---
 
 ## Overview
 
-Financial time-series data often contains noise and fluctuations that make underlying patterns difficult to identify.
+Financial time-series data contains noise, fluctuations, and structural changes that can make underlying patterns difficult to identify.
 
-QuantForge investigates whether a signal can be converted into a grayscale image, processed using classical image processing algorithms, and analyzed to recover useful structural information.
+QuantForge investigates whether one-dimensional signals can be represented as grayscale images, processed using classical image-processing algorithms, and reconstructed for quantitative evaluation.
 
-The results are compared against numerical signal-processing baselines to evaluate accuracy, computational cost, and practical limitations.
+Image-based approaches are compared against conventional numerical methods to study reconstruction accuracy, computational cost, and their limitations.
 
-The initial implementation uses synthetic data with known underlying patterns. Historical market data may be introduced in later experiments.
+The current research engine uses synthetic signals with known underlying trends and volatility regimes. A web-based interface allows experiments to be configured, executed, visualized, and stored for later analysis.
 
-## Objectives
+## Current Features
 
-- Generate synthetic financial-style signals with controllable noise and different regimes.
-- Convert one-dimensional time-series signals into grayscale images.
-- Apply classical image processing techniques to analyze signal structure.
-- Compare image-based processing with conventional numerical methods.
-- Evaluate reconstruction error, detection quality, runtime, and memory usage.
-- Explore potential applications in quantitative research and financial signal analysis.
+### Signal Generation
+- Synthetic financial-style signal generation.
+- Configurable sample count, random seed, and noise level.
+- Multiple signal regimes: uptrend, downtrend, and sideways movement.
 
-## Methodology
+### Image-Based Signal Processing
+- Conversion of one-dimensional signals into grayscale images.
+- Gaussian filtering using OpenCV.
+- Reconstruction of numerical signals from processed images.
 
-The planned workflow consists of the following stages:
+### Numerical Baselines
+- Moving-average filtering.
+- Direct comparison between image-based and numerical approaches.
 
-1. **Signal Generation** — Generate underlying trends and add controlled random noise.
-2. **Signal-to-Image Conversion** — Represent numerical signals as grayscale pixel arrays.
-3. **Image Processing** — Apply smoothing filters, histogram processing, edge detection, and other relevant techniques.
-4. **Feature Extraction** — Investigate trends, candidate change points, and structural features.
-5. **Numerical Baselines** — Compare image-based results with conventional numerical filtering.
-6. **Evaluation** — Measure reconstruction error, detection performance, runtime, and memory usage.
+### Quantitative Evaluation
+- Mean Squared Error (MSE).
+- Reconstruction quality comparisons.
+- Runtime measurement.
+- Experiment parameter tracking.
 
-## Image Processing Techniques
+### Experiment Management
+- Persistent experiment storage using SQLite.
+- Experiment history and individual experiment details.
+- Aggregate statistics and MSE comparisons.
+- Experiment deletion and retrieval.
 
-The project will investigate techniques from the Image and Video Processing syllabus, including:
+### Web Application
+- Interactive React and TypeScript frontend.
+- FastAPI REST backend.
+- Live signal preview without persisting preview requests.
+- Signal Lab for configurable experiments.
+- Dashboard for experiment statistics and visualization.
 
-- Mean, median, and Gaussian filtering
-- Histogram processing and equalization
-- Canny edge detection
-- Morphological operations
-- Hough transform for geometric line detection, where appropriate
+---
 
-Not every technique is expected to improve every result. Experiments will assess their effectiveness and limitations.
+## Research Methodology
 
-## Evaluation Metrics
+The experimental workflow consists of:
 
-| Metric | Purpose |
-|---|---|
-| Mean Squared Error (MSE) | Measures squared reconstruction error |
-| Mean Absolute Error (MAE) | Measures average absolute reconstruction error |
-| Precision and Recall | Evaluates detection quality when reference events are available |
-| Runtime | Measures computational efficiency |
-| Memory Usage | Estimates resource consumption |
+1. **Signal Generation:** Generate synthetic signals with known trends and controlled noise.
+2. **Signal-to-Image Conversion:** Map numerical signals into grayscale images.
+3. **Image Processing:** Apply Gaussian smoothing to the generated images.
+4. **Signal Reconstruction:** Recover numerical signals from processed images.
+5. **Numerical Baseline:** Apply moving-average filtering directly to the original noisy signals.
+6. **Evaluation:** Compare reconstructed signals against the known clean signal using MSE and runtime measurements.
+7. **Experiment Tracking:** Store experimental parameters and evaluation results for further analysis.
+
+## Research Findings
+
+Initial experiments indicate that the relative performance of image-based and numerical filtering depends on noise conditions and signal characteristics.
+
+The research has explored multiple noise levels, filter parameters, random seeds, and signal regimes.
+
+The evaluation includes held-out test seeds and paired statistical comparisons. Current results do not establish a statistically significant overall advantage for either approach after multiple-comparison correction.
+
+An important objective is to identify where image-based processing is useful, where conventional numerical approaches perform better, and what limitations arise from the signal-to-image representation.
+
+For detailed methodology, experimental results, and statistical analysis, see the research report in `report/report1.md` and the benchmark notebook in `experiments/benchmark.ipynb`.
+
+---
 
 ## Technology Stack
 
-- **Language:** Python
-- **Numerical Computing:** NumPy, SciPy
-- **Image Processing:** OpenCV
-- **Visualization:** Matplotlib
-- **Data Analysis:** Pandas
-- **Testing:** pytest
-- **Experiments:** Jupyter Notebook
-- **Version Control:** Git and GitHub
+| Component | Technologies |
+|---|---|
+| Programming | Python |
+| Numerical Computing | NumPy |
+| Image Processing | OpenCV |
+| Visualization | Matplotlib, Recharts |
+| Backend | FastAPI, Pydantic |
+| Frontend | React, TypeScript, Vite |
+| Database | SQLite, SQLAlchemy |
+| Testing | pytest |
+| Experiments | Jupyter Notebook |
+| Version Control | Git, GitHub |
+
+---
+
+## Architecture
+
+```text
+                       QUANTFORGE
+                           |
+              +------------+------------+
+              |                         |
+        React Frontend            FastAPI Backend
+        TypeScript                 REST API
+              |                         |
+       +------+------+           +------+------+
+       |      |      |           |             |
+   Dashboard Signal Experiments Signal API  Experiment API
+              Lab                     |             |
+                                      |           SQLite
+                                      |
+                           Python Research Engine
+                                      |
+                  +-------------------+-------------------+
+                  |                   |                   |
+             Generation         Image Pipeline       Numerical
+                                                     Baselines
+                  |                   |                   |
+                  +-------------------+-------------------+
+                                      |
+                             Evaluation & Metrics
+```
+
+---
 
 ## Project Structure
 
 ```text
 QuantForge/
-├── data/
-│   ├── synthetic/
-│   └── market/
-├── outputs/
-│   ├── plots/
-│   ├── images/
-│   └── metrics/
+├── backend/
+│   └── app/
+│       ├── api/
+│       │   ├── experiments.py
+│       │   └── signals.py
+│       ├── db/
+│       │   └── database.py
+│       ├── models/
+│       │   └── experiment.py
+│       ├── services/
+│       │   └── signal_service.py
+│       └── main.py
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Experiments.tsx
+│   │   │   └── SignalLab.tsx
+│   │   ├── services/
+│   │   │   └── api.ts
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   └── package.json
+│
 ├── src/
 │   ├── generate_signals.py
 │   ├── signal_to_image.py
 │   ├── image_pipeline.py
+│   ├── recover_signal.py
 │   ├── numerical_baselines.py
-│   ├── feature_extraction.py
-│   └── evaluation.py
+│   ├── evaluation.py
+│   └── feature_extraction.py
+│
+├── tests/
 ├── experiments/
 │   └── benchmark.ipynb
-├── tests/
-│   └── test_signal.py
+├── data/
+├── outputs/
 ├── report/
+│   ├── figures/
+│   └── report1.md
 ├── requirements.txt
 └── README.md
 ```
 
+---
+
 ## Getting Started
 
+### Prerequisites
+
+- Python 3.10+
+- Node.js and npm
+- Git
+
 ### 1. Clone the repository
+
+Replace `YOUR_USERNAME` with your GitHub username.
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/QuantForge.git
 cd QuantForge
 ```
 
-### 2. Create a virtual environment
+### 2. Set up the Python environment
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+Install Python dependencies:
 
 ```bash
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Generate a synthetic signal
+### 3. Start the backend
+
+From the project root:
 
 ```bash
-python src/generate_signals.py
+uvicorn backend.app.main:app --reload
 ```
 
+The API will be available at:
+
+`http://127.0.0.1:8000`
+
+Interactive API documentation:
+
+`http://127.0.0.1:8000/docs`
+
+### 4. Start the frontend
+
+Open a separate terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the Vite development URL, usually:
+
+`http://localhost:5173`
+
 ### 5. Run tests
+
+From the project root:
 
 ```bash
 python -m pytest -q
 ```
 
-*Note: The complete image-processing pipeline and evaluation workflow are being implemented incrementally.*
+### 6. Run frontend checks
 
-## Future Work
+From the `frontend/` directory:
 
-- Complete the image-based signal-processing pipeline.
-- Benchmark image-based processing against numerical baselines.
-- Investigate robustness under different noise levels and signal regimes.
-- Validate selected experiments on historical market data.
-- Explore computational optimizations and reproducible quantitative experiments.
-- Investigate backtesting only if the results justify a subsequent trading-strategy experiment.
-
-## Scope and Disclaimer
-
-QuantForge is an educational and experimental research project. Its initial synthetic signals are simplified representations rather than realistic market simulations.
-
-Image processing does not inherently provide an advantage over direct numerical analysis. The purpose of this project is to investigate that question experimentally, not to assume the approach is superior.
-
-This project is not financial advice and does not constitute a validated trading system.
+```bash
+npm run lint
+npm run build
+```
 
 ---
 
-**Author:** Paarth Kashiv
+## API Overview
 
-**Focus Areas:** Digital Image Processing · Signal Analysis · Quantitative Research · Python
+The backend exposes REST endpoints for signal processing and experiment management.
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/v1/signals/preview` | POST | Generate a signal preview without saving an experiment |
+| `/api/v1/signals/generate` | POST | Run and persist a signal experiment |
+| `/api/v1/experiments/` | GET | Retrieve saved experiments |
+| `/api/v1/experiments/{id}` | GET | Retrieve an individual experiment |
+| `/api/v1/experiments/{id}` | DELETE | Delete an experiment |
+| `/api/v1/experiments/stats` | GET | Retrieve aggregate experiment statistics |
+
+For interactive endpoint documentation, visit `/docs` while the backend is running.
+
+---
+
+## Roadmap
+
+### Research
+- [x] Synthetic signal generation.
+- [x] Image-based signal conversion.
+- [x] Gaussian image filtering and reconstruction.
+- [x] Numerical moving-average baseline.
+- [x] Quantitative MSE evaluation.
+- [x] Independent test evaluation.
+- [x] Paired statistical comparisons.
+
+### Application
+- [x] FastAPI backend.
+- [x] SQLite experiment persistence.
+- [x] React-based Signal Lab.
+- [x] Experiment tracking dashboard.
+- [x] Live dashboard signal preview.
+- [ ] Advanced experiment analytics and parameter sensitivity.
+
+### Future Development
+- [ ] Historical financial market data integration.
+- [ ] Financial returns and volatility analysis.
+- [ ] Backtesting engine.
+- [ ] Performance profiling and optimization.
+- [ ] Exploration of selected C++ components for performance-critical workloads.
+
+---
+
+## Scope and Disclaimer
+
+QuantForge is an experimental research and software engineering project.
+
+Its current experiments use synthetic financial-style signals rather than live market data. The findings are intended to study signal-processing techniques and their limitations, not to provide investment advice or trading recommendations.
+
+---
+
+## Author
+
+Developed as an ongoing quantitative research and software engineering project.
+
+**QuantForge — Exploring the intersection of signal processing, computer vision, and quantitative research.**
