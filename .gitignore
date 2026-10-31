@@ -1,27 +1,52 @@
-
+```gitignore
+# ==========================================
 # Python
+# ==========================================
 __pycache__/
 *.py[cod]
 .venv/
 venv/
 .pytest_cache/
 
+# ==========================================
 # Jupyter
+# ==========================================
 .ipynb_checkpoints/
 
+# ==========================================
+# Node.js
+# ==========================================
+**/node_modules/
+**/dist/
+**/.vite/
+
+# ==========================================
+# Environment variables and secrets
+# ==========================================
+.env
+.env.*
+!.env.example
+
+# ==========================================
 # Generated outputs
+# ==========================================
 outputs/plots/*
 outputs/images/*
 outputs/metrics/*
+
 !outputs/plots/.gitkeep
 !outputs/images/.gitkeep
 !outputs/metrics/.gitkeep
 
-# Local data
+# ==========================================
+# Local market data
+# ==========================================
 data/market/*
 !data/market/.gitkeep
 
-# Secrets
-.env
+# ==========================================
+# Local project notes
+# ==========================================
 .project_progress.txt
 .project_questions.txt
+```
