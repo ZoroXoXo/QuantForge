@@ -15,8 +15,25 @@ import {
 
 import SignalLab from './pages/SignalLab'
 import Experiments from './pages/Experiments'
-import { getExperimentStats, type ExperimentStats } from './services/api'
 
+
+import {
+  getExperimentStats,
+  previewSignal,
+  type ExperimentStats,
+  type SignalResponse,
+} from './services/api'
+
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts'
 import './App.css'
 
 type Page = 'dashboard' | 'signal-lab' | 'experiments'
@@ -24,7 +41,55 @@ type Page = 'dashboard' | 'signal-lab' | 'experiments'
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard')
   const [stats, setStats] = useState<ExperimentStats | null>(null)
+  const [signalData, setSignalData] = useState<SignalResponse | null>(null)
+  const [signalLoading, setSignalLoading] = useState(false)
+  const [signalError, setSignalError] = useState('')
 
+  async function loadDashboardSignal(
+  isActive: () => boolean = () => true,
+) {
+  try {
+    if (isActive()) {
+      setSignalLoading(true)
+      setSignalError('')
+    }
+
+    const result = await previewSignal({
+      n: 1000,
+      seed: 42,
+      sideways_noise_std: 5,
+      gaussian_kernel: 151,
+      moving_average_window: 71,
+    })
+
+    if (isActive()) {
+      setSignalData(result)
+    }
+  } catch {
+    if (isActive()) {
+      setSignalError('Unable to load signal preview.')
+    }
+  } finally {
+    if (isActive()) {
+      setSignalLoading(false)
+    }
+  }
+}
+  const dashboardChartData = signalData
+  ? signalData.time
+      .filter((_, index) => index % 4 === 0)
+      .map((time, index) => {
+        const actualIndex = index * 4
+
+        return {
+          time,
+          clean: signalData.clean_signal[actualIndex],
+          noisy: signalData.noisy_signal[actualIndex],
+          gaussian: signalData.gaussian_recovered[actualIndex],
+          numerical: signalData.numerical_recovered[actualIndex],
+        }
+      })
+  : []
   // Fetch dashboard statistics
   useEffect(() => {
   if (currentPage !== 'dashboard') return
@@ -33,19 +98,20 @@ function App() {
 
   getExperimentStats()
     .then((data) => {
-      if (!cancelled) {
-        setStats(data)
-      }
+      if (!cancelled) setStats(data)
     })
     .catch((error) => {
-      console.error('Failed to load dashboard stats:', error)
+      if (!cancelled) {
+        console.error('Failed to load dashboard stats:', error)
+      }
     })
+
+  void loadDashboardSignal(() => !cancelled)
 
   return () => {
     cancelled = true
   }
 }, [currentPage])
-
   // Dashboard metrics from the database
   const metrics = [
     {
@@ -259,66 +325,93 @@ function App() {
                     <span className="panel-tag">SIGNAL LAB</span>
                   </div>
 
-                  <div className="chart-placeholder">
-                    <div className="chart-y-labels">
-                      <span>100</span>
-                      <span>50</span>
-                      <span>0</span>
-                      <span>-50</span>
-                    </div>
+                  <div className="dashboard-live-chart">
+            {signalLoading ? (
+    <div className="experiment-message">
+      Loading signal data...
+    </div>
+  ) : signalError ? (
+    <div className="experiment-message">
+      {signalError}
+      <button
+        className="primary-button"
+        onClick={() => void loadDashboardSignal()}
+      >
+        Retry
+      </button>
+    </div>
+  ) : signalData ? (
+    <ResponsiveContainer width="100%" height={260}>
+      <LineChart data={dashboardChartData}>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="#293246"
+        />
 
-                    <div className="chart-area">
-                      <div className="chart-grid-lines">
-                        <span />
-                        <span />
-                        <span />
-                        <span />
-                      </div>
+        <XAxis
+          dataKey="time"
+          stroke="#8993a7"
+          tick={{ fontSize: 11 }}
+        />
 
-                      <svg
-                        viewBox="0 0 700 230"
-                        preserveAspectRatio="none"
-                      >
-                        <polyline
-                          points="0,160 25,145 50,155 75,120 100,135 125,100 150,115 175,90 200,110 225,75 250,95 275,70 300,85 325,110 350,125 375,105 400,145 425,130 450,160 475,145 500,175 525,155 550,185 575,170 600,195 625,180 650,205 675,190 700,200"
-                          fill="none"
-                          stroke="#38bdf8"
-                          strokeWidth="2.5"
-                        />
+        <YAxis
+          stroke="#8993a7"
+          tick={{ fontSize: 11 }}
+          width={50}
+        />
 
-                        <polyline
-                          points="0,165 25,155 50,145 75,135 100,125 125,115 150,105 175,95 200,90 225,85 250,80 275,82 300,90 325,100 350,110 375,120 400,130 425,140 450,150 475,160 500,170 525,180 550,190 575,195 600,200 625,205 650,208 675,210 700,212"
-                          fill="none"
-                          stroke="#a78bfa"
-                          strokeWidth="2"
-                          strokeDasharray="6 5"
-                        />
-                      </svg>
+        <Tooltip
+          contentStyle={{
+            background: '#151e2d',
+            border: '1px solid #344157',
+            borderRadius: '8px',
+          }}
+        />
 
-                      <div className="chart-x-labels">
-                        <span>0</span>
-                        <span>250</span>
-                        <span>500</span>
-                        <span>750</span>
-                        <span>1000</span>
-                      </div>
-                    </div>
-                  </div>
+        <Legend />
 
-                  <div className="chart-legend">
-                    <span>
-                      <i className="legend-blue" />
-                      Noisy signal
-                    </span>
+        <Line
+          type="monotone"
+          dataKey="clean"
+          name="Clean"
+          stroke="#34d399"
+          dot={false}
+          strokeWidth={2}
+        />
 
-                    <span>
-                      <i className="legend-purple" />
-                      Reconstructed signal
-                    </span>
-                  </div>
+        <Line
+          type="monotone"
+          dataKey="noisy"
+          name="Noisy"
+          stroke="#64748b"
+          dot={false}
+          strokeWidth={1}
+        />
+
+        <Line
+          type="monotone"
+          dataKey="gaussian"
+          name="Gaussian"
+          stroke="#38bdf8"
+          dot={false}
+          strokeWidth={2}
+        />
+
+        <Line
+          type="monotone"
+          dataKey="numerical"
+          name="Numerical"
+          stroke="#a78bfa"
+          dot={false}
+          strokeWidth={2}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  ) : null}
+</div>
 
                   <div className="chart-note">
-                    Illustrative preview · Live API integration coming next
+                    Live signal preview · 1,000 samples
                   </div>
                 </div>
 

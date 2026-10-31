@@ -600,3 +600,10 @@ h3 { margin: 0; color: #e5eaf1; font-size: 13px; }
   height: 320px;
   margin-top: 20px;
 }
+
+.dashboard-live-chart {
+  width: 100%;
+  min-width: 0;
+  height: 280px;
+  margin-top: 12px;
+}

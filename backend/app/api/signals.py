@@ -70,3 +70,11 @@ def generate(
     except Exception:
         db.rollback()
         raise
+
+@router.post("/preview")
+def preview_signal(request: SignalRequest):
+    try:
+        return run_signal_experiment(**request.model_dump())
+
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))

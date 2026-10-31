@@ -86,6 +86,16 @@ export async function generateSignal(
 
   return response.data
 }
+export const previewSignal = async (
+  params: SignalRequest,
+): Promise<SignalResponse> => {
+  const response = await api.post<SignalResponse>(
+    '/api/v1/signals/preview',
+    params,
+  )
+
+  return response.data
+}
 
 export async function getExperiments(): Promise<Experiment[]> {//fetch all saved runs
   const response = await api.get<Experiment[]>('/api/v1/experiments/')
