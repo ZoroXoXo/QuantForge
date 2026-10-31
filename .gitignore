@@ -45,6 +45,14 @@ data/market/*
 !data/market/.gitkeep
 
 # ==========================================
+# Local SQLite database
+# ==========================================
+
+quantforge.db
+quantforge.db-shm
+quantforge.db-wal
+
+# ==========================================
 # Local project notes
 # ==========================================
 .project_progress.txt

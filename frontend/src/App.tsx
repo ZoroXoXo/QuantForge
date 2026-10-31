@@ -1,5 +1,6 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
 import {
   Activity,
   BarChart3,
@@ -13,39 +14,72 @@ import {
 } from 'lucide-react'
 
 import SignalLab from './pages/SignalLab'
+import Experiments from './pages/Experiments'
+import { getExperimentStats, type ExperimentStats } from './services/api'
+
 import './App.css'
 
-const metrics = [
-  {
-    label: 'Experiments',
-    value: '24',
-    change: '+4 this week',
-    icon: FlaskConical,
-  },
-  {
-    label: 'Best MSE',
-    value: '0.1946',
-    change: 'Numerical baseline',
-    icon: Activity,
-  },
-  {
-    label: 'Signals Processed',
-    value: '12.8K',
-    change: 'Across all experiments',
-    icon: BarChart3,
-  },
-  {
-    label: 'Avg. Runtime',
-    value: '8.4 ms',
-    change: 'Per 1,000 samples',
-    icon: Zap,
-  },
-]
-
-type Page = 'dashboard' | 'signal-lab'
+type Page = 'dashboard' | 'signal-lab' | 'experiments'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard')
+  const [stats, setStats] = useState<ExperimentStats | null>(null)
+
+  // Fetch dashboard statistics
+  useEffect(() => {
+  if (currentPage !== 'dashboard') return
+
+  let cancelled = false
+
+  getExperimentStats()
+    .then((data) => {
+      if (!cancelled) {
+        setStats(data)
+      }
+    })
+    .catch((error) => {
+      console.error('Failed to load dashboard stats:', error)
+    })
+
+  return () => {
+    cancelled = true
+  }
+}, [currentPage])
+
+  // Dashboard metrics from the database
+  const metrics = [
+    {
+      label: 'Experiments',
+      value: stats ? stats.total_experiments.toLocaleString() : '—',
+      change: 'Saved research runs',
+      icon: FlaskConical,
+    },
+    {
+      label: 'Best MSE',
+      value: stats
+        ? Math.min(
+            stats.best_gaussian_mse,
+            stats.best_numerical_mse,
+          ).toFixed(4)
+        : '—',
+      change: 'Best recorded reconstruction',
+      icon: Activity,
+    },
+    {
+      label: 'Signals Processed',
+      value: stats ? stats.total_samples.toLocaleString() : '—',
+      change: 'Total samples processed',
+      icon: BarChart3,
+    },
+    {
+      label: 'Avg. Runtime',
+      value: stats
+        ? `${stats.average_runtime_ms.toFixed(2)} ms`
+        : '—',
+      change: 'Per experiment',
+      icon: Zap,
+    },
+  ]
 
   return (
     <div className="app-shell">
@@ -55,6 +89,7 @@ function App() {
           <div className="brand-icon">
             <Activity size={21} />
           </div>
+
           <span>
             Quant<span className="brand-accent">Forge</span>
           </span>
@@ -63,23 +98,35 @@ function App() {
         <div className="workspace-label">WORKSPACE</div>
 
         <nav className="nav-menu">
+          {/* Dashboard */}
           <button
-            className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}
+            className={`nav-item ${
+              currentPage === 'dashboard' ? 'active' : ''
+            }`}
             onClick={() => setCurrentPage('dashboard')}
           >
             <LayoutDashboard size={18} />
             Dashboard
           </button>
 
+          {/* Signal Lab */}
           <button
-            className={`nav-item ${currentPage === 'signal-lab' ? 'active' : ''}`}
+            className={`nav-item ${
+              currentPage === 'signal-lab' ? 'active' : ''
+            }`}
             onClick={() => setCurrentPage('signal-lab')}
           >
             <FlaskConical size={18} />
             Signal Lab
           </button>
 
-          <button className="nav-item" disabled>
+          {/* Experiments */}
+          <button
+            className={`nav-item ${
+              currentPage === 'experiments' ? 'active' : ''
+            }`}
+            onClick={() => setCurrentPage('experiments')}
+          >
             <BarChart3 size={18} />
             Experiments
           </button>
@@ -115,7 +162,12 @@ function App() {
           <div className="breadcrumb">
             Workspace
             <span>/</span>
-            {currentPage === 'dashboard' ? 'Dashboard' : 'Signal Lab'}
+
+            {currentPage === 'dashboard'
+              ? 'Dashboard'
+              : currentPage === 'signal-lab'
+                ? 'Signal Lab'
+                : 'Experiments'}
           </div>
 
           <div className="profile">
@@ -126,8 +178,15 @@ function App() {
         </header>
 
         <div className="page-content">
+          {/* Signal Lab */}
           {currentPage === 'signal-lab' ? (
             <SignalLab />
+
+          /* Experiments */
+          ) : currentPage === 'experiments' ? (
+            <Experiments />
+
+          /* Dashboard */
           ) : (
             <>
               {/* Dashboard heading */}
@@ -135,6 +194,7 @@ function App() {
                 <div>
                   <div className="eyebrow">RESEARCH OVERVIEW</div>
                   <h1>Dashboard</h1>
+
                   <p>
                     Monitor your quantitative research and signal processing
                     experiments.
@@ -162,8 +222,13 @@ function App() {
                         <Icon size={18} />
                       </div>
 
-                      <div className="metric-value">{metric.value}</div>
-                      <div className="metric-change">{metric.change}</div>
+                      <div className="metric-value">
+                        {metric.value}
+                      </div>
+
+                      <div className="metric-change">
+                        {metric.change}
+                      </div>
                     </div>
                   )
                 })}
@@ -300,7 +365,7 @@ function App() {
 
                   <button
                     className="action-card"
-                    onClick={() => setCurrentPage('signal-lab')}
+                    onClick={() => setCurrentPage('experiments')}
                   >
                     <div className="action-icon green">
                       <Database size={19} />
@@ -316,6 +381,7 @@ function App() {
 
                   <div className="backend-status">
                     <span className="status-dot" />
+
                     <div>
                       <strong>Backend connection</strong>
                       <small>FastAPI integration configured</small>

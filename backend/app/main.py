@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from backend.app.api.signals import router as signals_router
 from fastapi.middleware.cors import CORSMiddleware #to configure CORS
+from backend.app.db.database import Base, engine
+from backend.app.models import experiment  # Registers the Experiment model
+from backend.app.api.experiments import router as experiments_router #for retrieving saved exp
 
+Base.metadata.create_all(bind=engine) #Creates experiment table if it doesnt alr exist
+#wont del existing records
 
 app = FastAPI(
     title="QuantForge API",
@@ -11,7 +16,7 @@ app = FastAPI(
 
 
 app.include_router(signals_router)
-
+app.include_router(experiments_router)
 
 @app.get("/")
 def root():
@@ -29,3 +34,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+

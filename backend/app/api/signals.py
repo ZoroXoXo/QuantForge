@@ -1,6 +1,11 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field, model_validator
+from time import perf_counter
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field, model_validator
+from sqlalchemy.orm import Session
+
+from backend.app.db.database import get_db
+from backend.app.models.experiment import Experiment
 from backend.app.services.signal_service import run_signal_experiment
 
 router = APIRouter(prefix="/api/v1/signals", tags=["Signals"])
@@ -25,8 +30,43 @@ class SignalRequest(BaseModel):
 
 
 @router.post("/generate")
-def generate(request: SignalRequest):
+def generate(
+    request: SignalRequest,
+    db: Session = Depends(get_db),
+):
     try:
-        return run_signal_experiment(**request.model_dump())
+        start_time = perf_counter()
+
+        result = run_signal_experiment(**request.model_dump())
+
+        runtime_ms = (perf_counter() - start_time) * 1000
+
+        experiment = Experiment(
+            samples=request.n,
+            seed=request.seed,
+            sideways_noise_std=request.sideways_noise_std,
+            gaussian_kernel=request.gaussian_kernel,
+            moving_average_window=request.moving_average_window,
+            noisy_mse=result["metrics"]["noisy_mse"],
+            gaussian_mse=result["metrics"]["gaussian_mse"],
+            numerical_mse=result["metrics"]["numerical_mse"],
+            runtime_ms=runtime_ms,
+        )
+
+        db.add(experiment)
+        db.commit()
+        db.refresh(experiment)
+
+        return {
+            **result,
+            "experiment_id": experiment.id,
+            "runtime_ms": runtime_ms,
+        }
+
     except ValueError as exc:
+        db.rollback()
         raise HTTPException(status_code=400, detail=str(exc))
+
+    except Exception:
+        db.rollback()
+        raise
